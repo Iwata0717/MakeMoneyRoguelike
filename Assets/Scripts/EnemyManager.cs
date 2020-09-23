@@ -4,23 +4,34 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-	private EnemyController[] _enemys = new EnemyController[10];
+	private int _maxEnemies = 5;
+	private EnemyController[] _enemys = new EnemyController[5];
+
+	[SerializeField] private GameObject _enemyPrefab = null;
+	[SerializeField] private CharacterSpawnManager _characterSpawnManager = null;
+	[SerializeField] private TurnManager _turnManager = null;
 
 	// Start is called before the first frame update
 	void Start()
-    {
-		Spawn(10);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-	//
-	public void Spawn(int spawnValue)
 	{
+		//エネミーの生成
+		for (int i = 0; i < _maxEnemies; i++)
+		{
+			_enemys[i] = _characterSpawnManager.CharacterSpawn(_enemyPrefab).GetComponent<EnemyController>();
+		}
+	}
 
+	// Update is called once per frame
+	void Update()
+	{
+		//
+		if (!_turnManager.GetIsPlayerTurn())
+		{
+			for (int i = 0; i < _maxEnemies; i++)
+			{
+				_enemys[i].MoveEnemy();
+			}
+			_turnManager.ChangeIsPlayerTurn();
+		}
 	}
 }
