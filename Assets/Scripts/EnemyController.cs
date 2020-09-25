@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyController : CharacterState
 {
-	public bool _isLoop = true;
+	private bool _isLoop = true;
 
 	//
 	void Start()
@@ -24,14 +24,18 @@ public class EnemyController : CharacterState
 	public void MoveEnemy()
 	{
 		//
-		if (_dungeonManager.GetRoom((int)transform.position.x, -((int)transform.position.y + 1)) ||
-			_dungeonManager.GetRoom((int)transform.position.x, -((int)transform.position.y - 1)) ||
-			_dungeonManager.GetRoom((int)transform.position.x + 1, -(int)transform.position.y) ||
-			_dungeonManager.GetRoom((int)transform.position.x - 1, -(int)transform.position.y))
+		if (_dungeonManager.GetMap((int)transform.position.x, -((int)transform.position.y + 1)) ||
+			_dungeonManager.GetMap((int)transform.position.x, -((int)transform.position.y - 1)) ||
+			_dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y) ||
+			_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y) ||
+			_dungeonManager.GetMap((int)transform.position.x + 1, -((int)transform.position.y + 1)) ||
+			_dungeonManager.GetMap((int)transform.position.x + 1, -((int)transform.position.y - 1)) ||
+			_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y + 1) ||
+			_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y - 1))
 		{
 			while (_isLoop)
 			{
-				DIR dir = (DIR)Random.Range(0, 4);
+				DIR dir = (DIR)Random.Range(0, 8);
 
 				//
 				switch (dir)
@@ -39,7 +43,7 @@ public class EnemyController : CharacterState
 					case DIR.UP:
 
 						//
-						if (_dungeonManager.GetRoom((int)transform.position.x, -((int)transform.position.y + 1)))
+						if (_dungeonManager.GetMap((int)transform.position.x, -(int)transform.position.y - 1))
 						{
 							StartCharacterMove(0, 1, dir);
 							_isLoop = false;
@@ -49,7 +53,7 @@ public class EnemyController : CharacterState
 					case DIR.DOWN:
 
 						//
-						if (_dungeonManager.GetRoom((int)transform.position.x, -((int)transform.position.y - 1)))
+						if (_dungeonManager.GetMap((int)transform.position.x, -(int)transform.position.y + 1))
 						{
 							StartCharacterMove(0, -1, dir);
 							_isLoop = false;
@@ -59,9 +63,29 @@ public class EnemyController : CharacterState
 					case DIR.RIGHT:
 
 						//
-						if (_dungeonManager.GetRoom((int)transform.position.x + 1, -(int)transform.position.y))
+						if (_dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y))
 						{
 							StartCharacterMove(1, 0, dir);
+							_isLoop = false;
+						}
+						break;
+
+					case DIR.RIGHTUP:
+
+						//
+						if (_dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y - 1))
+						{
+							StartCharacterMove(1, 1, dir);
+							_isLoop = false;
+						}
+						break;
+
+					case DIR.RIGHTDOWN:
+
+						//
+						if (_dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y + 1))
+						{
+							StartCharacterMove(1, -1, dir);
 							_isLoop = false;
 						}
 						break;
@@ -69,9 +93,29 @@ public class EnemyController : CharacterState
 					case DIR.LEFT:
 
 						//
-						if (_dungeonManager.GetRoom((int)transform.position.x - 1, -(int)transform.position.y))
+						if (_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y))
 						{
 							StartCharacterMove(-1, 0, dir);
+							_isLoop = false;
+						}
+						break;
+
+					case DIR.LEFTUP:
+
+						//
+						if (_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y - 1))
+						{
+							StartCharacterMove(-1, 1, dir);
+							_isLoop = false;
+						}
+						break;
+
+					case DIR.LEFTDOWN:
+
+						//
+						if (_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y + 1))
+						{
+							StartCharacterMove(-1, -1, dir);
 							_isLoop = false;
 						}
 						break;

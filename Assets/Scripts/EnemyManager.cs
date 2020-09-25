@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-	private int _maxEnemies = 5;
-	private EnemyController[] _enemys = new EnemyController[5];
+	private static int _maxEnemies = 1;
+	private EnemyController[] _enemys = new EnemyController[_maxEnemies];
 
 	[SerializeField] private GameObject _enemyPrefab = null;
 	[SerializeField] private CharacterSpawnManager _characterSpawnManager = null;
@@ -29,7 +29,7 @@ public class EnemyManager : MonoBehaviour
 		{
 			for (int i = 0; i < _maxEnemies; i++)
 			{
-				_enemys[i].MoveEnemy();
+				//_enemys[i].MoveEnemy();
 			}
 			_turnManager.ChangeIsPlayerTurn();
 		}

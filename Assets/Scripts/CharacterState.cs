@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterState : MonoBehaviour
+public class CharacterState : TypeManager
 {
 	protected bool _isMove;
 	protected int _hp;
@@ -10,19 +10,19 @@ public class CharacterState : MonoBehaviour
 	protected int _defense;
 	protected int _movementX, _movementY;
 	protected int _targetPosX, _targetPosY;
-	protected float _speed = 4f;
+	protected float _speed = SpeedManager._dash;
 	protected enum DIR
 	{
 		UP,
 		DOWN,
 		RIGHT,
-		//RIGHTUP,
-		//RIGHTDOWN,
+		RIGHTUP,
+		RIGHTDOWN,
 		LEFT,
-		//LEFTUP,
-		//LEFTDOWN
+		LEFTUP,
+		LEFTDOWN
 	}
-	protected DIR _dir;
+	[SerializeField] protected DIR _dir;
 	protected DungeonManager _dungeonManager = null;
 
 	//
@@ -35,11 +35,12 @@ public class CharacterState : MonoBehaviour
 		_targetPosY = (int)transform.position.y + _movementY;
 		_dir = dir;
 
-		_dungeonManager.SetRoom((int)transform.position.x, -(int)transform.position.y);
-		_dungeonManager.SetRoom(_targetPosX, -_targetPosY);
+		_dungeonManager.SetMap((int)transform.position.x, -(int)transform.position.y);
+		_dungeonManager.SetMap(_targetPosX, -_targetPosY);
 		CharacterMove();
 	}
 
+	//
 	protected void CharacterMove()
 	{
 		transform.Translate(_movementX * _speed * Time.deltaTime, _movementY * _speed * Time.deltaTime, 0);
@@ -51,6 +52,7 @@ public class CharacterState : MonoBehaviour
 				if (transform.position.y >= _targetPosY)
 				{
 					transform.position = new Vector2(transform.position.x, _targetPosY);
+					MoveStateReset();
 					_isMove = false;
 				}
 				break;
@@ -60,6 +62,7 @@ public class CharacterState : MonoBehaviour
 				if (transform.position.y <= _targetPosY)
 				{
 					transform.position = new Vector2(transform.position.x, _targetPosY);
+					MoveStateReset();
 					_isMove = false;
 				}
 				break;
@@ -69,6 +72,27 @@ public class CharacterState : MonoBehaviour
 				if (transform.position.x >= _targetPosX)
 				{
 					transform.position = new Vector2(_targetPosX, transform.position.y);
+					MoveStateReset();
+					_isMove = false;
+				}
+				break;
+
+			case DIR.RIGHTUP:
+
+				if (transform.position.x >= _targetPosX && transform.position.y >= _targetPosY)
+				{
+					transform.position = new Vector2(_targetPosX, _targetPosY);
+					MoveStateReset();
+					_isMove = false;
+				}
+				break;
+
+			case DIR.RIGHTDOWN:
+
+				if (transform.position.x >= _targetPosX && transform.position.y <= _targetPosY)
+				{
+					transform.position = new Vector2(_targetPosX, _targetPosY);
+					MoveStateReset();
 					_isMove = false;
 				}
 				break;
@@ -78,9 +102,47 @@ public class CharacterState : MonoBehaviour
 				if (transform.position.x <= _targetPosX)
 				{
 					transform.position = new Vector2(_targetPosX, transform.position.y);
+					MoveStateReset();
 					_isMove = false;
 				}
 				break;
+
+			case DIR.LEFTUP:
+
+				if (transform.position.x <= _targetPosX && transform.position.y >= _targetPosY)
+				{
+					transform.position = new Vector2(_targetPosX, _targetPosY);
+					MoveStateReset();
+					_isMove = false;
+				}
+				break;
+
+			case DIR.LEFTDOWN:
+
+				if (transform.position.x <= _targetPosX && transform.position.y <= _targetPosY)
+				{
+					transform.position = new Vector2(_targetPosX, _targetPosY);
+					MoveStateReset();
+					_isMove = false;
+				}
+				break;
+
 		}
 	}
+
+	public void MoveStateReset()
+	{
+		_movementX = 0;
+		_movementY = 0;
+		_targetPosX = 0;
+		_targetPosY = 0;
+	}
+}
+
+public class SpeedManager
+{
+	public const float _dash = 10f;
+	public const float _fast = 5f;
+	public const float _normal = 4f;
+	public const float _slow = 3f;
 }
