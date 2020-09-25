@@ -5,12 +5,20 @@ using UnityEngine;
 public class EnemyController : CharacterState
 {
 	public bool _isLoop = true;
-	private DungeonManager _dungeonManager = null;
-	
+
 	//
 	void Start()
 	{
 		_dungeonManager = GameObject.Find("DungeonManager").GetComponent<DungeonManager>();
+	}
+
+	void Update()
+	{
+		//移動中だったら
+		if (_isMove)
+		{
+			CharacterMove();
+		}
 	}
 
 	public void MoveEnemy()
@@ -23,19 +31,17 @@ public class EnemyController : CharacterState
 		{
 			while (_isLoop)
 			{
-				_dir = (DIR)Random.Range(0, 4);
+				DIR dir = (DIR)Random.Range(0, 4);
 
 				//
-				switch (_dir)
+				switch (dir)
 				{
 					case DIR.UP:
 
 						//
 						if (_dungeonManager.GetRoom((int)transform.position.x, -((int)transform.position.y + 1)))
 						{
-							_dungeonManager.SetRoom((int)transform.position.x, -((int)transform.position.y));
-							_dungeonManager.SetRoom((int)transform.position.x, -((int)transform.position.y + 1));
-							transform.Translate(0, 1, 0);
+							StartCharacterMove(0, 1, dir);
 							_isLoop = false;
 						}
 						break;
@@ -45,9 +51,7 @@ public class EnemyController : CharacterState
 						//
 						if (_dungeonManager.GetRoom((int)transform.position.x, -((int)transform.position.y - 1)))
 						{
-							_dungeonManager.SetRoom((int)transform.position.x, -(int)transform.position.y);
-							_dungeonManager.SetRoom((int)transform.position.x, -((int)transform.position.y - 1));
-							transform.Translate(0, -1, 0);
+							StartCharacterMove(0, -1, dir);
 							_isLoop = false;
 						}
 						break;
@@ -57,9 +61,7 @@ public class EnemyController : CharacterState
 						//
 						if (_dungeonManager.GetRoom((int)transform.position.x + 1, -(int)transform.position.y))
 						{
-							_dungeonManager.SetRoom((int)transform.position.x, -(int)transform.position.y);
-							_dungeonManager.SetRoom((int)transform.position.x + 1, -((int)transform.position.y));
-							transform.Translate(1, 0, 0);
+							StartCharacterMove(1, 0, dir);
 							_isLoop = false;
 						}
 						break;
@@ -69,9 +71,7 @@ public class EnemyController : CharacterState
 						//
 						if (_dungeonManager.GetRoom((int)transform.position.x - 1, -(int)transform.position.y))
 						{
-							_dungeonManager.SetRoom((int)transform.position.x, -(int)transform.position.y);
-							_dungeonManager.SetRoom((int)transform.position.x - 1, -(int)transform.position.y);
-							transform.Translate(-1, 0, 0);
+							StartCharacterMove(-1, 0, dir);
 							_isLoop = false;
 						}
 						break;
