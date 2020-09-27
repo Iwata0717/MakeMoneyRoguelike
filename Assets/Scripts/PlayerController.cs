@@ -32,109 +32,101 @@ public class PlayerController : CharacterState
 			//プレイヤーのターンだったら行動
 			if (_turnManager.GetIsPlayerTurn())
 			{
-				int x = 0;
-				int y = 0;
-				DIR dir = DIR.UP;
+				while (true)
+				{
 
-				//上
-				if (Input.GetKey(KeyCode.UpArrow) && _dungeonManager.GetMap((int)transform.position.x, -(int)transform.position.y - 1))
-				{
-					x = 0;
-					y = 1;
-					dir = DIR.UP;
-				}
+					//右上
+					if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow))
+					{
+						if (_dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y - 1))
+						{
+							StartCharacterMove(1,1, DIR.RIGHTUP);
+							_turnManager.ChangeIsPlayerTurn();
+							break;
+						}
+						else
+						{
+							break;
+						}
+					}
 
-				//下
-				else if (Input.GetKey(KeyCode.DownArrow) && _dungeonManager.GetMap((int)transform.position.x, -(int)transform.position.y + 1))
-				{
-					x = 0;
-					y = -1;
-					dir = DIR.DOWN;
-				}
+					//右下 
+					if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.DownArrow))
+					{
+						if (_dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y + 1))
+						{
+							StartCharacterMove(1, -1, DIR.RIGHTDOWN);
+							_turnManager.ChangeIsPlayerTurn();
+							break;
+						}
+						else
+						{
+							break;
+						}
+					}
 
-				//右
-				else if (Input.GetKey(KeyCode.RightArrow) && _dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y))
-				{
-					x = 1;
-					y = 0;
-					dir = DIR.RIGHT;
-				}
+					//左上
+					if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow))
+					{
+						if (_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y - 1))
+						{
+							StartCharacterMove(-1, 1, DIR.LEFTUP);
+							_turnManager.ChangeIsPlayerTurn();
+							break;
+						}
+						else
+						{
+							break;
+						}
+					}
 
-				//左
-				else if (Input.GetKey(KeyCode.LeftArrow) && _dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y))
-				{
-					x = -1;
-					y = 0;
-					dir = DIR.LEFT;
-				}
+					//左下
+					if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.DownArrow))
+					{
+						if (_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y + 1))
+						{
+							StartCharacterMove(-1, -1, DIR.LEFTDOWN);
+							_turnManager.ChangeIsPlayerTurn();
+							break;
+						}
+						else
+						{
+							break;
+						}
+					}
 
-				//右上
-				if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow))
-				{
-					if (_dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y - 1))
+					//上
+					if (Input.GetKey(KeyCode.UpArrow) && _dungeonManager.GetMap((int)transform.position.x, -(int)transform.position.y - 1))
 					{
-						x = 1;
-						y = 1;
-						dir = DIR.RIGHTUP;
+						StartCharacterMove(0, 1, DIR.UP);
+						_turnManager.ChangeIsPlayerTurn();
+						break;
 					}
-					else
-					{
-						x = 0;
-						y = 0;
-					}
-				}
 
-				//右下 
-				else if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.DownArrow))
-				{
-					if (_dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y + 1))
+					//下
+					if (Input.GetKey(KeyCode.DownArrow) && _dungeonManager.GetMap((int)transform.position.x, -(int)transform.position.y + 1))
 					{
-						x = 1;
-						y = -1;
-						dir = DIR.RIGHTDOWN;
+						StartCharacterMove(0, -1, DIR.DOWN);
+						_turnManager.ChangeIsPlayerTurn();
+						break;
 					}
-					else
-					{
-						x = 0;
-						y = 0;
-					}
-				}
 
-				//左上
-				else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow))
-				{
-					if (_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y - 1))
+					//右
+					if (Input.GetKey(KeyCode.RightArrow) && _dungeonManager.GetMap((int)transform.position.x + 1, -(int)transform.position.y))
 					{
-						x = -1;
-						y = 1;
-						dir = DIR.LEFTUP;
+						StartCharacterMove(1,0, DIR.RIGHT);
+						_turnManager.ChangeIsPlayerTurn();
+						break;
 					}
-					else
-					{
-						x = 0;
-						y = 0;
-					}
-				}
 
-				//左下
-				else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.DownArrow))
-				{
-					if (_dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y + 1))
+					//左
+					if (Input.GetKey(KeyCode.LeftArrow) && _dungeonManager.GetMap((int)transform.position.x - 1, -(int)transform.position.y))
 					{
-						x = -1;
-						y = -1;
-						dir = DIR.LEFTDOWN;
+						StartCharacterMove(-1, 0, DIR.LEFT);
+						_turnManager.ChangeIsPlayerTurn();
+						break;
 					}
-					else
-					{
-						x = 0;
-						y = 0;
-					}
-				}
-				if (x != 0 || y != 0)
-				{
-					StartCharacterMove(x, y, dir);
-					_turnManager.ChangeIsPlayerTurn();
+					break;
 				}
 			}
 		}

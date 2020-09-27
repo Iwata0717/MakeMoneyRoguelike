@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-	private static int _maxEnemies = 1;
+	private static int _maxEnemies = 0;
 	private EnemyController[] _enemys = new EnemyController[_maxEnemies];
 
 	[SerializeField] private GameObject _enemyPrefab = null;
