@@ -6,17 +6,18 @@ public class DungeonManager : MonoBehaviour
 {
 	private const int _mapWidth = 60;
 	private const int _mapHeight = 40;
-	private static int _maxRooms = 9;
-	public int _currentRooms = 0;
-	private const int _minRoomWidth = 7;
-	private const int _maxRoomWidth = 15;
-	private const int _minRoomHeight = 7;
-	private const int _maxRoomHeight = 15;
+	private static int _maxRooms = 10;
+	private int _currentRooms = 0;
+	private const int _minRoomWidth = 8;
+	private const int _maxRoomWidth = 20;
+	private const int _minRoomHeight = 8;
+	private const int _maxRoomHeight = 20;
 	private int _minBlockWidth = 10;
 	private int _minBlockHeight = 10;
 	private static bool[,] _map = new bool[_mapHeight, _mapWidth];
-	private RoomState[] _rooms = new RoomState[_maxRooms];
-	private GameObject [,] _obj = new GameObject[_mapHeight, _mapWidth];
+	private static bool[,] _mapRoad = new bool[_mapHeight, _mapWidth];
+	private State[] _blocks = new State[_maxRooms];
+	private State[] _rooms = new State[_maxRooms];
 
 	[SerializeField] private GameObject Floor = null;
 	[SerializeField] private GameObject Wall = null;
@@ -24,9 +25,15 @@ public class DungeonManager : MonoBehaviour
 	//
 	private void Awake()
 	{
+		//
+		_minBlockWidth = _minRoomWidth + 2;
+		_minBlockHeight = _minRoomHeight + 2;
+
+		//
 		for (int i = 0; i < _maxRooms; i++)
 		{
-			_rooms[i] = new RoomState();
+			_blocks[i] = new State();
+			_rooms[i] = new State();
 		}
 		for (int i = 0; i < _mapHeight; i++)
 		{
@@ -43,34 +50,40 @@ public class DungeonManager : MonoBehaviour
 				{
 					_map[i, j] = true;
 				}
+
+				//
+				_mapRoad[i, j] = false;
 			}
 		}
 
-		_rooms[_currentRooms].SetPosition(1, 1);
+		_blocks[_currentRooms].PosX = 1;
+		_blocks[_currentRooms].PosY = 1;
 		_currentRooms++;
 
 		MakeLine();
-		CreateRoom();
+		CreateRooms();
+		CheckRoomNextDoors();
 		MakeWall();
+		MakeRoad();
 
 		for (int i = 0; i < _mapHeight; i++)
 		{
 			for (int j = 0; j < _mapWidth; j++)
 			{
-				//端だったら壁を生成
+				//
 				if (_map[i, j])
 				{
-					_obj[i, j] = Instantiate(Floor, new Vector2(j, -i), Quaternion.identity);
+					Instantiate(Floor, new Vector2(j, -i), Quaternion.identity);
 				}
 
-				//それ以外だったら床を生成
+				//
 				else
 				{
-					_obj[i, j] = Instantiate(Wall, new Vector2(j, -i), Quaternion.identity);
+					Instantiate(Wall, new Vector2(j, -i), Quaternion.identity);
 				}
 			}
 		}
-	}
+	}	
 
 	//
 	public void MakeLine()
@@ -105,7 +118,8 @@ public class DungeonManager : MonoBehaviour
 
 						if (isNextRoom)
 						{
-							_rooms[_currentRooms].SetPosition(line + 1, 1);
+							_blocks[_currentRooms].PosX = line + 1;
+							_blocks[_currentRooms].PosY = 1;
 							_currentRooms++;
 
 							for (int j = 1; j < _mapHeight - 1; j++)
@@ -148,7 +162,8 @@ public class DungeonManager : MonoBehaviour
 								}
 								else
 								{
-									_rooms[_currentRooms].SetPosition(line + 1, j + 1);
+									_blocks[_currentRooms].PosX = line + 1;
+									_blocks[_currentRooms].PosY = j + 1;
 									_currentRooms++;
 									break;
 								}
@@ -182,7 +197,8 @@ public class DungeonManager : MonoBehaviour
 								}
 								else
 								{
-									_rooms[_currentRooms].SetPosition(j + 1, line + 1);
+									_blocks[_currentRooms].PosX = j + 1;
+									_blocks[_currentRooms].PosY = line + 1;
 									_currentRooms++;
 									break;
 								}
@@ -208,7 +224,8 @@ public class DungeonManager : MonoBehaviour
 
 						if (isNextRoom)
 						{
-							_rooms[_currentRooms].SetPosition(1, line + 1);
+							_blocks[_currentRooms].PosX = 1;
+							_blocks[_currentRooms].PosY = line + 1;
 							_currentRooms++;
 
 							for (int j = 1; j < _mapWidth - 1; j++)
@@ -233,72 +250,49 @@ public class DungeonManager : MonoBehaviour
 		}
 	}
 
-	public void CreateRoom()
+	//
+	public void CreateRooms()
 	{
 		for (int i = 0; i < _currentRooms; i++)
 		{
 			int roomWidthSpread = 0;
 			int roomHeightSpread = 0;
-			int roomWidth = 0;
-			int roomHeight = 0;
-			int x = 0;
-			int y = 0;
 
 			//
-			if (_rooms[i].GetMakeRoomPosX() == _mapWidth - _minBlockWidth - 1)
+			while (_map[_blocks[i].PosY, _blocks[i].PosX + _minBlockWidth - 1 + roomWidthSpread])
 			{
-				roomWidth = Random.Range(_minRoomWidth, _minBlockWidth + 1);
-				x = Random.Range(_rooms[i].GetMakeRoomPosX(), _rooms[i].GetMakeRoomPosX() + _minBlockWidth - roomWidth + 1);
+				roomWidthSpread++;
+			}
+			roomWidthSpread--;
+			_blocks[i].Width = _minBlockWidth + roomWidthSpread;
+
+			if (_blocks[i].Width - 2 > _maxRoomWidth)
+			{
+				_rooms[i].Width = Random.Range(_minRoomWidth, _maxRoomWidth + 1);
 			}
 			else
 			{
-				for (roomWidthSpread = 0; roomWidthSpread < _maxRoomWidth - _minRoomWidth; roomWidthSpread++)
-				{
-					if (!_map[_rooms[i].GetMakeRoomPosY(), _rooms[i].GetMakeRoomPosX() + _minBlockWidth + roomWidthSpread])
-					{
-						roomWidthSpread--;
-						break;
-					}
-				}
-				if(_minBlockWidth + roomWidthSpread > _maxRoomWidth)
-				{
-					roomWidth = Random.Range(_minRoomWidth, _maxRoomWidth + 1);
-				}
-				else
-				{
-					roomWidth = Random.Range(_minRoomWidth, _minBlockWidth + roomWidthSpread + 1);
-				}
-				x = Random.Range(_rooms[i].GetMakeRoomPosX(), _rooms[i].GetMakeRoomPosX() + _minBlockWidth + roomWidthSpread - roomWidth + 1);
+				_rooms[i].Width = Random.Range(_minRoomWidth, _blocks[i].Width - 2 + 1);
 			}
+			_rooms[i].PosX = Random.Range(_blocks[i].PosX + 1, _blocks[i].PosX + _blocks[i].Width - _rooms[i].Width);
 
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//
-			if (_rooms[i].GetMakeRoomPosY() == _mapHeight - _minBlockHeight - 1)
+			while (_map[_blocks[i].PosY + _minBlockHeight - 1 + roomHeightSpread, _blocks[i].PosX])
 			{
-				roomHeight = Random.Range(_minRoomHeight, _minBlockHeight + 1);
-				y = Random.Range(_rooms[i].GetMakeRoomPosY(), _rooms[i].GetMakeRoomPosY() + _minBlockHeight - roomHeight + 1);
+				roomHeightSpread++;
+			}
+			roomHeightSpread--;
+			_blocks[i].Height = _minBlockHeight + roomHeightSpread;
+
+			if (_blocks[i].Height - 2 > _maxRoomHeight)
+			{
+				_rooms[i].Height = Random.Range(_minRoomHeight, _maxRoomHeight + 1);
 			}
 			else
 			{
-				for (roomHeightSpread = 0; roomHeightSpread < _maxRoomHeight - _minRoomHeight; roomHeightSpread++)
-				{
-					if (!_map[_rooms[i].GetMakeRoomPosY() + _minBlockHeight + roomHeightSpread, _rooms[i].GetMakeRoomPosX()])
-					{
-						roomHeightSpread--;
-						break;
-					}
-				}
-				if (_minBlockHeight + roomHeightSpread > _maxRoomHeight)
-				{
-					roomHeight = Random.Range(_minRoomHeight, _maxRoomHeight + 1);
-				}
-				else
-				{
-					roomHeight = Random.Range(_minRoomHeight, _minBlockHeight + roomHeightSpread + 1);
-				}
-				y = Random.Range(_rooms[i].GetMakeRoomPosY(), _rooms[i].GetMakeRoomPosY() + _minBlockHeight + roomHeightSpread - roomHeight + 1);
+				_rooms[i].Height = Random.Range(_minRoomHeight, _blocks[i].Height - 2 + 1);
 			}
-			_rooms[i].CreateRoom(x, y, roomWidth, roomHeight);
+			_rooms[i].PosY = Random.Range(_blocks[i].PosY + 1, _blocks[i].PosY + _blocks[i].Height - _rooms[i].Height);
 		}
 	}
 
@@ -340,6 +334,284 @@ public class DungeonManager : MonoBehaviour
 	}
 
 	//
+	public void CheckRoomNextDoors()
+	{
+		for (int i = 0; i < _currentRooms; i++)
+		{
+			for (int j = i + 1; j < _currentRooms; j++)
+			{
+				//右隣だったら
+				if (_blocks[i].PosX + _blocks[i].Width + 1 == _blocks[j].PosX)
+				{
+					if (_blocks[i].PosY == _blocks[j].PosY || _blocks[i].PosY + _blocks[i].Height - 1 == _blocks[j].PosY + _blocks[j].Height - 1)
+					{
+						int startPosX;
+						int startPosY1;
+						int startPosY2;
+
+						startPosX = _rooms[i].PosX + _rooms[i].Width;
+						if (_blocks[i].PosY == _blocks[j].PosY)
+						{
+							startPosY1 = Random.Range(_rooms[i].PosY, _rooms[i].PosY + _rooms[i].Height / 2);
+						}
+						else
+						{
+							startPosY1 = Random.Range(_rooms[i].PosY + _rooms[i].Height / 2, _rooms[i].PosY + _rooms[i].Height);
+						}
+
+						while (_map[startPosY1, startPosX])
+						{
+							_mapRoad[startPosY1, startPosX] = true;
+							startPosX++;
+						}
+						_mapRoad[startPosY1, startPosX] = true;
+
+						startPosX = _rooms[j].PosX - 1;
+						if (_blocks[i].PosY == _blocks[j].PosY)
+						{
+							startPosY2 = Random.Range(_rooms[j].PosY, _rooms[j].PosY + _rooms[j].Height / 2);
+						}
+						else
+						{
+							startPosY2 = Random.Range(_rooms[j].PosY + _rooms[j].Height / 2, _rooms[j].PosY + _rooms[j].Height);
+						}
+
+						while (_map[startPosY2, startPosX])
+						{
+							_mapRoad[startPosY2, startPosX] = true;
+							startPosX--;
+						}
+						_mapRoad[startPosY2, startPosX] = true;
+
+						while (true)
+						{
+							if (startPosY1 > startPosY2)
+							{
+								startPosY1--;
+								_mapRoad[startPosY1, startPosX] = true;
+							}
+							else if (startPosY1 < startPosY2)
+							{
+								startPosY2--;
+								_mapRoad[startPosY2, startPosX] = true;
+							}
+							else
+							{
+								break;
+							}
+						}
+					}
+				}
+
+				//左隣だったら
+				if (_blocks[i].PosX - 2 == _blocks[j].PosX + _blocks[j].Width - 1)
+				{
+					if (_blocks[i].PosY == _blocks[j].PosY || _blocks[i].PosY + _blocks[i].Height - 1 == _blocks[j].PosY + _blocks[j].Height - 1)
+					{
+						int startPosX;
+						int startPosY1;
+						int startPosY2;
+
+						startPosX = _rooms[i].PosX - 1;
+						if (_blocks[i].PosY == _blocks[j].PosY)
+						{
+							startPosY1 = Random.Range(_rooms[i].PosY, _rooms[i].PosY + _rooms[i].Height / 2);
+						}
+						else
+						{
+							startPosY1 = Random.Range(_rooms[i].PosY + _rooms[i].Height / 2, _rooms[i].PosY + _rooms[i].Height);
+						}
+
+						while (_map[startPosY1, startPosX])
+						{
+							_mapRoad[startPosY1, startPosX] = true;
+							startPosX--;
+						}
+						_mapRoad[startPosY1, startPosX] = true;
+
+						startPosX = _rooms[j].PosX + _rooms[j].Width;
+						if (_blocks[i].PosY == _blocks[j].PosY)
+						{
+							startPosY2 = Random.Range(_rooms[j].PosY, _rooms[j].PosY + _rooms[j].Height / 2);
+						}
+						else
+						{
+							startPosY2 = Random.Range(_rooms[j].PosY + _rooms[j].Height / 2, _rooms[j].PosY + _rooms[j].Height);
+						}
+
+						while (_map[startPosY2, startPosX])
+						{
+							_mapRoad[startPosY2, startPosX] = true;
+							startPosX++;
+						}
+						_mapRoad[startPosY2, startPosX] = true;
+
+						while (true)
+						{
+							if (startPosY1 > startPosY2)
+							{
+								startPosY1--;
+								_mapRoad[startPosY1, startPosX] = true;
+							}
+							else if (startPosY1 < startPosY2)
+							{
+								startPosY2--;
+								_mapRoad[startPosY2, startPosX] = true;
+							}
+							else
+							{
+								break;
+							}
+						}
+					}
+				}
+
+				//上隣だったら
+				if (_blocks[i].PosY - 2 == _blocks[j].PosY + _blocks[j].Height - 1)
+				{
+					if (_blocks[i].PosX == _blocks[j].PosX || _blocks[i].PosX + _blocks[i].Width - 1 == _blocks[j].PosX + _blocks[j].Width - 1)
+					{
+						int startPosX1;
+						int startPosX2;
+						int startPosY;
+
+						if (_blocks[i].PosX == _blocks[j].PosX)
+						{
+							startPosX1 = Random.Range(_rooms[i].PosX, _rooms[i].PosX + _rooms[i].Width / 2);
+						}
+						else
+						{
+							startPosX1 = Random.Range(_rooms[i].PosX + _rooms[i].Width / 2, _rooms[i].PosX + _rooms[i].Width);
+						}
+						startPosY = _rooms[i].PosY - 1;
+
+						while (_map[startPosY, startPosX1])
+						{
+							_mapRoad[startPosY, startPosX1] = true;
+							startPosY--;
+						}
+						_mapRoad[startPosY, startPosX1] = true;
+
+						if (_blocks[i].PosX == _blocks[j].PosX)
+						{
+							startPosX2 = Random.Range(_rooms[j].PosX, _rooms[j].PosX + _rooms[j].Width / 2);
+						}
+						else
+						{
+							startPosX2 = Random.Range(_rooms[j].PosX + _rooms[j].Width / 2, _rooms[j].PosX + _rooms[j].Width);
+						}
+						startPosY = _rooms[j].PosY + _rooms[j].Height;
+
+						while (_map[startPosY, startPosX2])
+						{
+							_mapRoad[startPosY, startPosX2] = true;
+							startPosY++;
+						}
+						_mapRoad[startPosY, startPosX2] = true;
+
+						while (true)
+						{
+							if (startPosX1 > startPosX2)
+							{
+								startPosX1--;
+								_mapRoad[startPosY, startPosX1] = true;
+							}
+							else if (startPosX1 < startPosX2)
+							{
+								startPosX2--;
+								_mapRoad[startPosY, startPosX2] = true;
+							}
+							else
+							{
+								break;
+							}
+						}
+					}
+				}
+
+				//下隣だったら
+				if (_blocks[i].PosY + _blocks[i].Height + 1 == _blocks[j].PosY)
+				{
+					if (_blocks[i].PosX == _blocks[j].PosX || _blocks[i].PosX + _blocks[i].Width - 1 == _blocks[j].PosX + _blocks[j].Width - 1)
+					{
+						int startPosX1;
+						int startPosX2;
+						int startPosY;
+
+						if (_blocks[i].PosX == _blocks[j].PosX)
+						{
+							startPosX1 = Random.Range(_rooms[i].PosX, _rooms[i].PosX + _rooms[i].Width / 2);
+						}
+						else
+						{
+							startPosX1 = Random.Range(_rooms[i].PosX + _rooms[i].Width / 2, _rooms[i].PosX + _rooms[i].Width);
+						}
+						startPosY = _rooms[i].PosY + _rooms[i].Height;
+
+						while (_map[startPosY, startPosX1])
+						{
+							_mapRoad[startPosY, startPosX1] = true;
+							startPosY++;
+						}
+						_mapRoad[startPosY, startPosX1] = true;
+
+						if (_blocks[i].PosX == _blocks[j].PosX)
+						{
+							startPosX2 = Random.Range(_rooms[j].PosX, _rooms[j].PosX + _rooms[j].Width / 2);
+						}
+						else
+						{
+							startPosX2 = Random.Range(_rooms[j].PosX + _rooms[j].Width / 2, _rooms[j].PosX + _rooms[j].Width);
+						}
+						startPosY = _rooms[j].PosY - 1;
+
+						while (_map[startPosY, startPosX2])
+						{
+							_mapRoad[startPosY, startPosX2] = true;
+							startPosY--;
+						}
+						_mapRoad[startPosY, startPosX2] = true;
+
+						while (true)
+						{
+							if (startPosX1 > startPosX2)
+							{
+								startPosX1--;
+								_mapRoad[startPosY, startPosX1] = true;
+							}
+							else if (startPosX1 < startPosX2)
+							{
+								startPosX2--;
+								_mapRoad[startPosY, startPosX2] = true;
+							}
+							else
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//
+	public void MakeRoad()
+	{
+		for (int i = 1; i < _mapHeight - 1; i++)
+		{
+			for (int j = 1; j < _mapWidth - 1; j++)
+			{
+				//
+				if (_mapRoad[i, j])
+				{
+					_map[i, j] = true; ;
+				}
+			}
+		}
+	}
+
+	//
 	public int GetMapHeight()
 	{
 		return _mapHeight;
@@ -358,53 +630,40 @@ public class DungeonManager : MonoBehaviour
 	}
 }
 
-//
-public class RoomState
+public class State
 {
-	public int _makeRoomPosX;
-	public int _makeRoomPosY;
-	public int _roomWidth;
-	public int _roomHeight;
-
-	public void SetPosition(int x, int y)
+	//
+	private int _posX;
+	public int PosX
 	{
-		_makeRoomPosX = x;
-		_makeRoomPosY = y;
+		get { return _posX; }
+		set { _posX = value; }
+	}
+	private int _posY;
+	public int PosY
+	{
+		get { return _posY; }
+		set { _posY = value; }
+	}
+	private int _width;
+	public int Width
+	{
+		get { return _width; }
+		set { _width = value; }
+	}
+	private int _height;
+	public int Height
+	{
+		get { return _height; }
+		set { _height = value; }
 	}
 
-	public int GetMakeRoomPosX()
-	{
-		return _makeRoomPosX;
-	}
-
-	public int GetMakeRoomPosY()
-	{
-		return _makeRoomPosY;
-	}
-
-	public int GetMakeRoomWidth()
-	{
-		return _roomWidth;
-	}
-
-	public int GetMakeRoomHeight()
-	{
-		return _roomHeight;
-	}
-
-	public void CreateRoom(int x, int y, int width, int height)
-	{
-		_makeRoomPosX = x;
-		_makeRoomPosY = y;
-		_roomWidth = width;
-		_roomHeight = height;
-	}
-
+	//
 	public bool GetRoomArea(int x, int y)
 	{
-		if (x >= _makeRoomPosX && x < _makeRoomPosX + _roomWidth)
+		if (x >= PosX && x < PosX + Width)
 		{
-			if (y >= _makeRoomPosY && y < _makeRoomPosY + _roomHeight)
+			if (y >= PosY && y < PosY + Height)
 			{
 				return true;
 			}
