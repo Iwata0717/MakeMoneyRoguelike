@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class TypeManager : MonoBehaviour
 {
-	protected enum Type
+	protected enum CipType
 	{
 		PLAYER,
 		ENEMY,
 		ITEM,
 		WALL,
-		FLOOR
+		FLOOR,
+		GOAL
 	}
-	[SerializeField] protected Type _type;
+	[SerializeField] protected CipType _type;
 
+	//
 	public string ReturnType()
 	{
 		return _type.ToString();

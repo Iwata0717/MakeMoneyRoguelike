@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class DungeonManager : MonoBehaviour
 {
-	private const int _mapWidth = 60;
-	private const int _mapHeight = 40;
+	private const int _mapWidth = 50;
+	private const int _mapHeight = 30;
+
 	private static int _maxRooms = 10;
 	private int _currentRooms = 0;
+
 	private const int _minRoomWidth = 8;
 	private const int _maxRoomWidth = 20;
 	private const int _minRoomHeight = 8;
 	private const int _maxRoomHeight = 20;
-	private int _minBlockWidth = 10;
-	private int _minBlockHeight = 10;
+
+	private int _minBlockWidth;
+	private int _minBlockHeight;
+
 	private static bool[,] _map = new bool[_mapHeight, _mapWidth];
 	private static bool[,] _mapRoad = new bool[_mapHeight, _mapWidth];
 	private State[] _blocks = new State[_maxRooms];
@@ -21,6 +25,8 @@ public class DungeonManager : MonoBehaviour
 
 	[SerializeField] private GameObject Floor = null;
 	[SerializeField] private GameObject Wall = null;
+
+	[SerializeField] private MiniMapManager _miniMapManager = null;
 
 	//
 	private void Awake()
@@ -35,6 +41,7 @@ public class DungeonManager : MonoBehaviour
 			_blocks[i] = new State();
 			_rooms[i] = new State();
 		}
+
 		for (int i = 0; i < _mapHeight; i++)
 		{
 			for (int j = 0; j < _mapWidth; j++)
@@ -56,15 +63,12 @@ public class DungeonManager : MonoBehaviour
 			}
 		}
 
-		_blocks[_currentRooms].PosX = 1;
-		_blocks[_currentRooms].PosY = 1;
-		_currentRooms++;
-
 		MakeLine();
 		CreateRooms();
 		CheckRoomNextDoors();
 		MakeWall();
 		MakeRoad();
+		_miniMapManager.MakeMiniMap(_mapWidth, _mapHeight);
 
 		for (int i = 0; i < _mapHeight; i++)
 		{
@@ -73,23 +77,27 @@ public class DungeonManager : MonoBehaviour
 				//
 				if (_map[i, j])
 				{
-					Instantiate(Floor, new Vector2(j, -i), Quaternion.identity);
+					Instantiate(Floor, new Vector3(j, i), Quaternion.identity);
 				}
 
 				//
 				else
 				{
-					Instantiate(Wall, new Vector2(j, -i), Quaternion.identity);
+					Instantiate(Wall, new Vector3(j, i), Quaternion.identity);
 				}
 			}
 		}
-	}	
+	}
 
 	//
 	public void MakeLine()
 	{
 		bool isNextRoom = true;
 		int line;
+
+		_blocks[_currentRooms].PosX = 1;
+		_blocks[_currentRooms].PosY = 1;
+		_currentRooms++;
 
 		//n回ループする
 		for (int i = 0; i < 50; i++)
@@ -325,12 +333,6 @@ public class DungeonManager : MonoBehaviour
 				}
 			}
 		}
-	}
-
-	//
-	public int GetMapWidth()
-	{
-		return _mapWidth;
 	}
 
 	//
@@ -609,6 +611,12 @@ public class DungeonManager : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	//
+	public int GetMapWidth()
+	{
+		return _mapWidth;
 	}
 
 	//

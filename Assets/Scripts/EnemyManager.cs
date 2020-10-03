@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyManager : MonoBehaviour
+public class EnemyManager : TypeManager
 {
-	private static int _maxEnemies = 0;
+	private static int _maxEnemies = 10;
 	private EnemyController[] _enemys = new EnemyController[_maxEnemies];
 
 	[SerializeField] private GameObject _enemyPrefab = null;
 	[SerializeField] private CharacterSpawnManager _characterSpawnManager = null;
 	[SerializeField] private TurnManager _turnManager = null;
+	[SerializeField] private MiniMapManager _miniMapManager = null;
 
 	// Start is called before the first frame update
 	void Start()
@@ -18,6 +19,7 @@ public class EnemyManager : MonoBehaviour
 		for (int i = 0; i < _maxEnemies; i++)
 		{
 			_enemys[i] = _characterSpawnManager.CharacterSpawn(_enemyPrefab).GetComponent<EnemyController>();
+			_miniMapManager.SetMiniMap((int)_enemys[i].transform.position.x, (int)_enemys[i].transform.position.y, (int)_type);
 		}
 	}
 
