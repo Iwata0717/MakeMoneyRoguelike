@@ -83,7 +83,7 @@ public class DungeonManager : MonoBehaviour
 				//
 				else
 				{
-					Instantiate(Wall, new Vector3(j, i), Quaternion.identity);
+					//Instantiate(Wall, new Vector3(j, i), Quaternion.identity);
 				}
 			}
 		}

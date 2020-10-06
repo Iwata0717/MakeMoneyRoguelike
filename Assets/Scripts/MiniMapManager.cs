@@ -7,6 +7,7 @@ public class MiniMapManager : TypeManager
 {
 	private Image[,] _mapCip = null;
 
+	[SerializeField] private DungeonManager _dungeonManager = null;
 	[SerializeField] private GameObject _miniMap = null;
 	[SerializeField] private Image _mapCipPrefab = null;
 	[SerializeField] private Sprite Player = null;
@@ -26,10 +27,13 @@ public class MiniMapManager : TypeManager
 		{
 			for (int j = 0; j < mapWidth; j++)
 			{
-				_mapCip[i, j] = Instantiate(_mapCipPrefab, new Vector2(j * _mapCipPrefab.rectTransform.sizeDelta.x, i * _mapCipPrefab.rectTransform.sizeDelta.y), Quaternion.identity);
-				_mapCip[i, j].transform.SetParent(_miniMap.transform, false);
-				_mapCip[i, j].sprite = Floor;
-				_mapCip[i, j].gameObject.SetActive(false);
+				if (_dungeonManager.GetMap(j, i))
+				{
+					_mapCip[i, j] = Instantiate(_mapCipPrefab, new Vector2(j * _mapCipPrefab.rectTransform.sizeDelta.x, i * _mapCipPrefab.rectTransform.sizeDelta.y), Quaternion.identity);
+					_mapCip[i, j].transform.SetParent(_miniMap.transform, false);
+					_mapCip[i, j].sprite = Floor;
+					_mapCip[i, j].gameObject.SetActive(false);
+				}
 			}
 		}
 	}
