@@ -26,8 +26,14 @@ public class PlayerController : CharacterState
 		//移動中でなければ
 		else
 		{
+			//
+			if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow))
+			{
+
+			}
+
 			//右上
-			if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow) && 
+			else if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow) && 
 				Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y + 1) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y + 1))
 			{

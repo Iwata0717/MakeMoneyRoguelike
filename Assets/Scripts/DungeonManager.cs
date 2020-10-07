@@ -299,26 +299,17 @@ public class DungeonManager : StatesBase
 	//
 	public void MakeWall()
 	{
-		int room = 0;
-
 		//
-		for (int i = 1; i < _mapHeight - 1; i++)
+		for (int room = 0; room < _currentRooms; room++)
 		{
 			//
-			for (int j = 1; j < _mapWidth - 1; j++)
+			for (int i = _blocks[room].PosY; i < _blocks[room].PosY + _blocks[room].Height; i++)
 			{
 				//
-				if (_map[i, j])
+				for (int j = _blocks[room].PosX; j < _blocks[room].PosX + _blocks[room].Width; j++)
 				{
 					//
-					for (room = 0; room < _currentRooms; room++)
-					{
-						if (_rooms[room].GetRoomArea(j, i))
-						{
-							break;
-						}
-					}
-					if (room == _currentRooms)
+					if (!_rooms[room].GetRoomArea(j, i) && _map[i, j])
 					{
 						_map[i, j] = false;
 					}
@@ -632,8 +623,10 @@ public class DungeonManager : StatesBase
 	//
 	public void MakeRoad()
 	{
+		//
 		for (int i = 1; i < _mapHeight - 1; i++)
 		{
+			//
 			for (int j = 1; j < _mapWidth - 1; j++)
 			{
 				//
@@ -668,13 +661,7 @@ public class DungeonManager : StatesBase
 	public bool GetMap(int x, int y)
 	{
 		return _map[y, x];
-	}/*
-
-	//
-	public void SetMap(int x, int y)
-	{
-		_map[y, x] = !_map[y, x];
-	}*/
+	}
 }
 
 //
