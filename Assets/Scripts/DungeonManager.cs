@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DungeonManager : MonoBehaviour
+public class DungeonManager : StatesBase
 {
 	private const int _mapWidth = 50;
 	private const int _mapHeight = 30;
@@ -24,14 +24,12 @@ public class DungeonManager : MonoBehaviour
 	private State[] _rooms = new State[_maxRooms];
 
 	[SerializeField] private SpriteRenderer Floor = null;
-	[SerializeField] private SpriteRenderer Wall = null;
+	//[SerializeField] private SpriteRenderer Wall = null;
 	[SerializeField] private SpriteRenderer Room = null;
 	[SerializeField] private SpriteRenderer BackGround = null;
 
-	[SerializeField] private MiniMapManager _miniMapManager = null;
-
 	//
-	private void Awake()
+	public override void OnStart()
 	{
 		//
 		_minBlockWidth = _minRoomWidth + 2;
@@ -71,8 +69,12 @@ public class DungeonManager : MonoBehaviour
 		CheckRoomNextDoors();
 		MakeWall();
 		MakeRoad();
+	}
 
-		_miniMapManager.MakeMiniMap(_mapWidth, _mapHeight);
+	//
+	public override void OnUpdate()
+	{
+
 	}
 
 	//
@@ -666,13 +668,13 @@ public class DungeonManager : MonoBehaviour
 	public bool GetMap(int x, int y)
 	{
 		return _map[y, x];
-	}
+	}/*
 
 	//
 	public void SetMap(int x, int y)
 	{
 		_map[y, x] = !_map[y, x];
-	}
+	}*/
 }
 
 //

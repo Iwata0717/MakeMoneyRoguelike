@@ -5,15 +5,7 @@ using UnityEngine;
 public class EnemyController : CharacterState
 {
 	private bool _isLoop = true;
-	private MiniMapManager _miniMapManager;
-
-	//
-	void Start()
-	{
-		_dungeonManager = GameObject.Find("DungeonManager").GetComponent<DungeonManager>();
-		_miniMapManager = GameObject.Find("MiniMapManager").GetComponent<MiniMapManager>();
-	}
-
+	
 	void Update()
 	{
 		//移動中だったら
@@ -26,14 +18,22 @@ public class EnemyController : CharacterState
 	public void MoveEnemy()
 	{
 		//
-		if (_dungeonManager.GetMap((int)transform.position.x, (int)transform.position.y + 1) ||
-			_dungeonManager.GetMap((int)transform.position.x, (int)transform.position.y - 1) ||
-			_dungeonManager.GetMap((int)transform.position.x + 1, (int)transform.position.y) ||
-			_dungeonManager.GetMap((int)transform.position.x - 1, (int)transform.position.y) ||
-			_dungeonManager.GetMap((int)transform.position.x + 1, (int)transform.position.y + 1) ||
-			_dungeonManager.GetMap((int)transform.position.x + 1, (int)transform.position.y - 1) ||
-			_dungeonManager.GetMap((int)transform.position.x - 1, (int)transform.position.y + 1) ||
-			_dungeonManager.GetMap((int)transform.position.x - 1, (int)transform.position.y - 1))
+		if (Managers.Dungeon.GetMap((int)transform.position.x, (int)transform.position.y + 1) ||
+			Managers.Dungeon.GetMap((int)transform.position.x, (int)transform.position.y - 1) ||
+			Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y) ||
+			Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y) ||
+			Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y + 1) ||
+			Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y - 1) ||
+			Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y + 1) ||
+			Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y - 1) ||
+			Managers.CharacterCollider.GetCollider((int)transform.position.x, (int)transform.position.y + 1) ||
+			Managers.CharacterCollider.GetCollider((int)transform.position.x, (int)transform.position.y - 1) ||
+			Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y) ||
+			Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y) ||
+			Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y + 1) ||
+			Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y - 1) ||
+			Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y + 1) ||
+			Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y - 1))
 		{
 			while (_isLoop)
 			{
@@ -45,9 +45,10 @@ public class EnemyController : CharacterState
 					case DIR.UP:
 
 						//
-						if (_dungeonManager.GetMap((int)transform.position.x, (int)transform.position.y + 1))
+						if (Managers.Dungeon.GetMap((int)transform.position.x, (int)transform.position.y + 1) &&
+							Managers.CharacterCollider.GetCollider((int)transform.position.x, (int)transform.position.y + 1))
 						{
-							_miniMapManager.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x, (int)transform.position.y + 1);
+							Managers.MiniMap.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x, (int)transform.position.y + 1);
 							StartCharacterMove(0, 1, dir);
 							_isLoop = false;
 						}
@@ -56,9 +57,10 @@ public class EnemyController : CharacterState
 					case DIR.DOWN:
 
 						//
-						if (_dungeonManager.GetMap((int)transform.position.x, (int)transform.position.y - 1))
+						if (Managers.Dungeon.GetMap((int)transform.position.x, (int)transform.position.y - 1) &&
+							Managers.CharacterCollider.GetCollider((int)transform.position.x, (int)transform.position.y - 1))
 						{
-							_miniMapManager.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x, (int)transform.position.y - 1);
+							Managers.MiniMap.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x, (int)transform.position.y - 1);
 							StartCharacterMove(0, -1, dir);
 							_isLoop = false;
 						}
@@ -67,9 +69,10 @@ public class EnemyController : CharacterState
 					case DIR.RIGHT:
 
 						//
-						if (_dungeonManager.GetMap((int)transform.position.x + 1, (int)transform.position.y))
+						if (Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y) &&
+							Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y))
 						{
-							_miniMapManager.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y);
+							Managers.MiniMap.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y);
 							StartCharacterMove(1, 0, dir);
 							_isLoop = false;
 						}
@@ -78,9 +81,10 @@ public class EnemyController : CharacterState
 					case DIR.RIGHTUP:
 
 						//
-						if (_dungeonManager.GetMap((int)transform.position.x + 1, (int)transform.position.y + 1))
+						if (Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y + 1) &&
+							Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y + 1))
 						{
-							_miniMapManager.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y + 1);
+							Managers.MiniMap.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y + 1);
 							StartCharacterMove(1, 1, dir);
 							_isLoop = false;
 						}
@@ -89,9 +93,10 @@ public class EnemyController : CharacterState
 					case DIR.RIGHTDOWN:
 
 						//
-						if (_dungeonManager.GetMap((int)transform.position.x + 1, (int)transform.position.y - 1))
+						if (Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y - 1) &&
+							Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y - 1))
 						{
-							_miniMapManager.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y - 1);
+							Managers.MiniMap.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y - 1);
 							StartCharacterMove(1, -1, dir);
 							_isLoop = false;
 						}
@@ -100,9 +105,10 @@ public class EnemyController : CharacterState
 					case DIR.LEFT:
 
 						//
-						if (_dungeonManager.GetMap((int)transform.position.x - 1, (int)transform.position.y))
+						if (Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y) &&
+							Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y))
 						{
-							_miniMapManager.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y);
+							Managers.MiniMap.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y);
 							StartCharacterMove(-1, 0, dir);
 							_isLoop = false;
 						}
@@ -111,9 +117,10 @@ public class EnemyController : CharacterState
 					case DIR.LEFTUP:
 
 						//
-						if (_dungeonManager.GetMap((int)transform.position.x - 1, (int)transform.position.y + 1))
+						if (Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y + 1) &&
+							Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y + 1))
 						{
-							_miniMapManager.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y + 1);
+							Managers.MiniMap.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y + 1);
 							StartCharacterMove(-1, 1, dir);
 							_isLoop = false;
 						}
@@ -122,9 +129,10 @@ public class EnemyController : CharacterState
 					case DIR.LEFTDOWN:
 
 						//
-						if (_dungeonManager.GetMap((int)transform.position.x - 1, (int)transform.position.y - 1))
+						if (Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y - 1) &&
+							Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y - 1))
 						{
-							_miniMapManager.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y - 1);
+							Managers.MiniMap.EnemyMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y - 1);
 							StartCharacterMove(-1, -1, dir);
 							_isLoop = false;
 						}

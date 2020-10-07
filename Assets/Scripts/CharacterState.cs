@@ -11,7 +11,6 @@ public class CharacterState : TypeManager
 	protected int _movementX, _movementY;
 	protected int _targetPosX, _targetPosY;
 	protected float _speed = SpeedManager._dash;
-	protected DungeonManager _dungeonManager = null;
 	protected enum DIR
 	{
 		UP,
@@ -35,8 +34,8 @@ public class CharacterState : TypeManager
 		_targetPosY = (int)transform.position.y + _movementY;
 		_dir = dir;
 
-		_dungeonManager.SetMap((int)transform.position.x, (int)transform.position.y);
-		_dungeonManager.SetMap(_targetPosX, _targetPosY);
+		Managers.CharacterCollider.SetCollider((int)transform.position.x, (int)transform.position.y);
+		Managers.CharacterCollider.SetCollider(_targetPosX, _targetPosY);
 		CharacterMove();
 	}
 

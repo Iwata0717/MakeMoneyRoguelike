@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-	public bool _isPlayerTurn = true;
+	private bool _isPlayerTurn = true;
 
 	//
 	public bool GetIsPlayerTurn()

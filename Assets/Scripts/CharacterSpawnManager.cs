@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class CharacterSpawnManager : MonoBehaviour
 {
-	[SerializeField] private DungeonManager _dungeonManager = null;
-
 	//
 	public GameObject CharacterSpawn(GameObject character)
 	{
@@ -14,12 +12,12 @@ public class CharacterSpawnManager : MonoBehaviour
 
 		while (true)
 		{
-			x = Random.Range(1, _dungeonManager.GetMapWidth() - 1);
-			y = Random.Range(1, _dungeonManager.GetMapHeight() - 1);
-			if (_dungeonManager.GetMap(x, y))
+			x = Random.Range(1, Managers.Dungeon.GetMapWidth() - 1);
+			y = Random.Range(1, Managers.Dungeon.GetMapHeight() - 1);
+			if (Managers.Dungeon.GetMap(x, y))
 			{
 				obj = Instantiate(character, new Vector2(x, y), Quaternion.identity);
-				_dungeonManager.SetMap(x, y);
+				Managers.CharacterCollider.SetCollider(x, y);
 				break;
 			}
 		}

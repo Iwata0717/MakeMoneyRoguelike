@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MiniMapManager : TypeManager
+public class MiniMapManager : StatesBase
 {
-	private Image[,] _mapCip = null;
-
-	[SerializeField] private DungeonManager _dungeonManager = null;
+	private static Image[,] _mapCip = null;
+	
 	[SerializeField] private GameObject _miniMap = null;
 	[SerializeField] private Image _mapCipPrefab = null;
 	[SerializeField] private Sprite Player = null;
@@ -17,17 +16,17 @@ public class MiniMapManager : TypeManager
 	[SerializeField] private Sprite Goal = null;
 
 	//
-	public void MakeMiniMap(int mapWidth, int mapHeight)
+	public override void OnStart()
 	{
 		//_miniMap.transform.Translate(0, -mapHeight, 0);
 		_miniMap.transform.position = new Vector3(_miniMap.transform.position.x, _miniMap.transform.position.y, _miniMap.transform.position.z);
-		_mapCip = new Image[mapHeight, mapWidth];
+		_mapCip = new Image[Managers.Dungeon.GetMapHeight(), Managers.Dungeon.GetMapWidth()];
 
-		for (int i = 0; i < mapHeight; i++)
+		for (int i = 0; i < Managers.Dungeon.GetMapHeight(); i++)
 		{
-			for (int j = 0; j < mapWidth; j++)
+			for (int j = 0; j < Managers.Dungeon.GetMapWidth(); j++)
 			{
-				if (_dungeonManager.GetMap(j, i))
+				if (Managers.Dungeon.GetMap(j, i))
 				{
 					_mapCip[i, j] = Instantiate(_mapCipPrefab, new Vector2(j * _mapCipPrefab.rectTransform.sizeDelta.x, i * _mapCipPrefab.rectTransform.sizeDelta.y), Quaternion.identity);
 					_mapCip[i, j].transform.SetParent(_miniMap.transform, false);
@@ -36,6 +35,11 @@ public class MiniMapManager : TypeManager
 				}
 			}
 		}
+	}
+
+	public override void OnUpdate()
+	{
+		throw new System.NotImplementedException();
 	}
 
 	//
@@ -52,17 +56,17 @@ public class MiniMapManager : TypeManager
 	//
 	public void SetMiniMap(int x, int y, int cipType)
 	{
-		switch ((CipType)cipType)
+		switch (cipType)
 		{
-			case CipType.ENEMY:
+			case 0:
 				_mapCip[y, x].sprite = Enemy;
 				break;
 
-			case CipType.ITEM:
+			case 1:
 				_mapCip[y, x].sprite = Item;
 				break;
 
-			case CipType.GOAL:
+			case 2:
 				_mapCip[y, x].sprite = Goal;
 				break;
 		}
