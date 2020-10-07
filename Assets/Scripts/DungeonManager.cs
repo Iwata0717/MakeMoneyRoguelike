@@ -23,8 +23,10 @@ public class DungeonManager : MonoBehaviour
 	private State[] _blocks = new State[_maxRooms];
 	private State[] _rooms = new State[_maxRooms];
 
-	[SerializeField] private GameObject Floor = null;
-	[SerializeField] private GameObject Wall = null;
+	[SerializeField] private SpriteRenderer Floor = null;
+	[SerializeField] private SpriteRenderer Wall = null;
+	[SerializeField] private SpriteRenderer Room = null;
+	[SerializeField] private SpriteRenderer BackGround = null;
 
 	[SerializeField] private MiniMapManager _miniMapManager = null;
 
@@ -63,30 +65,14 @@ public class DungeonManager : MonoBehaviour
 			}
 		}
 
+		MakeBackGround();
 		MakeLine();
 		CreateRooms();
 		CheckRoomNextDoors();
 		MakeWall();
 		MakeRoad();
+
 		_miniMapManager.MakeMiniMap(_mapWidth, _mapHeight);
-
-		for (int i = 0; i < _mapHeight; i++)
-		{
-			for (int j = 0; j < _mapWidth; j++)
-			{
-				//
-				if (_map[i, j])
-				{
-					Instantiate(Floor, new Vector3(j, i), Quaternion.identity);
-				}
-
-				//
-				else
-				{
-					//Instantiate(Wall, new Vector3(j, i), Quaternion.identity);
-				}
-			}
-		}
 	}
 
 	//
@@ -301,6 +287,10 @@ public class DungeonManager : MonoBehaviour
 				_rooms[i].Height = Random.Range(_minRoomHeight, _blocks[i].Height - 2 + 1);
 			}
 			_rooms[i].PosY = Random.Range(_blocks[i].PosY + 1, _blocks[i].PosY + _blocks[i].Height - _rooms[i].Height);
+
+			//
+			Room.size = new Vector2(_rooms[i].Width, _rooms[i].Height);
+			Instantiate(Room, new Vector3(_rooms[i].PosX + (_rooms[i].Width - 1) * 0.5f, _rooms[i].PosY + (_rooms[i].Height - 1) * 0.5f), Quaternion.identity);
 		}
 	}
 
@@ -364,9 +354,9 @@ public class DungeonManager : MonoBehaviour
 						while (_map[startPosY1, startPosX])
 						{
 							_mapRoad[startPosY1, startPosX] = true;
+							Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
 							startPosX++;
 						}
-						_mapRoad[startPosY1, startPosX] = true;
 
 						startPosX = _rooms[j].PosX - 1;
 						if (_blocks[i].PosY == _blocks[j].PosY)
@@ -381,24 +371,34 @@ public class DungeonManager : MonoBehaviour
 						while (_map[startPosY2, startPosX])
 						{
 							_mapRoad[startPosY2, startPosX] = true;
+							Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity);
 							startPosX--;
 						}
-						_mapRoad[startPosY2, startPosX] = true;
 
 						while (true)
 						{
 							if (startPosY1 > startPosY2)
 							{
+								if (!_mapRoad[startPosY1, startPosX])
+								{
+									_mapRoad[startPosY1, startPosX] = true;
+									Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
+								}
 								startPosY1--;
-								_mapRoad[startPosY1, startPosX] = true;
 							}
 							else if (startPosY1 < startPosY2)
 							{
+								if (!_mapRoad[startPosY2, startPosX])
+								{
+									_mapRoad[startPosY2, startPosX] = true;
+									Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity);
+								}
 								startPosY2--;
-								_mapRoad[startPosY2, startPosX] = true;
 							}
-							else
+							else if (startPosY1 == startPosY2)
 							{
+								_mapRoad[startPosY1, startPosX] = true;
+								Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
 								break;
 							}
 						}
@@ -427,9 +427,9 @@ public class DungeonManager : MonoBehaviour
 						while (_map[startPosY1, startPosX])
 						{
 							_mapRoad[startPosY1, startPosX] = true;
+							Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
 							startPosX--;
 						}
-						_mapRoad[startPosY1, startPosX] = true;
 
 						startPosX = _rooms[j].PosX + _rooms[j].Width;
 						if (_blocks[i].PosY == _blocks[j].PosY)
@@ -444,24 +444,34 @@ public class DungeonManager : MonoBehaviour
 						while (_map[startPosY2, startPosX])
 						{
 							_mapRoad[startPosY2, startPosX] = true;
+							Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity);
 							startPosX++;
 						}
-						_mapRoad[startPosY2, startPosX] = true;
 
 						while (true)
 						{
 							if (startPosY1 > startPosY2)
 							{
+								if (!_mapRoad[startPosY1, startPosX])
+								{
+									_mapRoad[startPosY1, startPosX] = true;
+									Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
+								}
 								startPosY1--;
-								_mapRoad[startPosY1, startPosX] = true;
 							}
 							else if (startPosY1 < startPosY2)
 							{
+								if (!_mapRoad[startPosY2, startPosX])
+								{
+									_mapRoad[startPosY2, startPosX] = true;
+									Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity);
+								}
 								startPosY2--;
-								_mapRoad[startPosY2, startPosX] = true;
 							}
-							else
+							else if (startPosY1 == startPosY2)
 							{
+								_mapRoad[startPosY1, startPosX] = true;
+								Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
 								break;
 							}
 						}
@@ -490,9 +500,9 @@ public class DungeonManager : MonoBehaviour
 						while (_map[startPosY, startPosX1])
 						{
 							_mapRoad[startPosY, startPosX1] = true;
+							Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
 							startPosY--;
 						}
-						_mapRoad[startPosY, startPosX1] = true;
 
 						if (_blocks[i].PosX == _blocks[j].PosX)
 						{
@@ -507,24 +517,34 @@ public class DungeonManager : MonoBehaviour
 						while (_map[startPosY, startPosX2])
 						{
 							_mapRoad[startPosY, startPosX2] = true;
+							Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity);
 							startPosY++;
 						}
-						_mapRoad[startPosY, startPosX2] = true;
 
 						while (true)
 						{
 							if (startPosX1 > startPosX2)
 							{
+								if (!_mapRoad[startPosY, startPosX1])
+								{
+									_mapRoad[startPosY, startPosX1] = true;
+									Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
+								}
 								startPosX1--;
-								_mapRoad[startPosY, startPosX1] = true;
 							}
 							else if (startPosX1 < startPosX2)
 							{
+								if (!_mapRoad[startPosY, startPosX2])
+								{
+									_mapRoad[startPosY, startPosX2] = true;
+									Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity);
+								}
 								startPosX2--;
-								_mapRoad[startPosY, startPosX2] = true;
 							}
-							else
+							else if (startPosX1 == startPosX2)
 							{
+								_mapRoad[startPosY, startPosX1] = true;
+								Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
 								break;
 							}
 						}
@@ -553,9 +573,9 @@ public class DungeonManager : MonoBehaviour
 						while (_map[startPosY, startPosX1])
 						{
 							_mapRoad[startPosY, startPosX1] = true;
+							Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
 							startPosY++;
 						}
-						_mapRoad[startPosY, startPosX1] = true;
 
 						if (_blocks[i].PosX == _blocks[j].PosX)
 						{
@@ -570,24 +590,34 @@ public class DungeonManager : MonoBehaviour
 						while (_map[startPosY, startPosX2])
 						{
 							_mapRoad[startPosY, startPosX2] = true;
+							Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity);
 							startPosY--;
 						}
-						_mapRoad[startPosY, startPosX2] = true;
 
 						while (true)
 						{
 							if (startPosX1 > startPosX2)
 							{
+								if (!_mapRoad[startPosY, startPosX1])
+								{
+									_mapRoad[startPosY, startPosX1] = true;
+									Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
+								}
 								startPosX1--;
-								_mapRoad[startPosY, startPosX1] = true;
 							}
 							else if (startPosX1 < startPosX2)
 							{
+								if (!_mapRoad[startPosY, startPosX2])
+								{
+									_mapRoad[startPosY, startPosX2] = true;
+									Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity);
+								}
 								startPosX2--;
-								_mapRoad[startPosY, startPosX2] = true;
 							}
-							else
+							else if(startPosX1 == startPosX2)
 							{
+								_mapRoad[startPosY, startPosX1] = true;
+								Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
 								break;
 							}
 						}
@@ -611,6 +641,13 @@ public class DungeonManager : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	//
+	public void MakeBackGround()
+	{
+		BackGround.size = new Vector2(_mapWidth + 10, _mapHeight + 10);
+		Instantiate(BackGround, new Vector3((_mapWidth - 1) * 0.5f, (_mapHeight - 1) * 0.5f), Quaternion.identity);
 	}
 
 	//
@@ -638,6 +675,7 @@ public class DungeonManager : MonoBehaviour
 	}
 }
 
+//
 public class State
 {
 	//
