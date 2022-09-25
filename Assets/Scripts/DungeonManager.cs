@@ -20,15 +20,18 @@ public class DungeonManager : StatesBase
 
 	private static bool[,] _map = new bool[_mapHeight, _mapWidth];
 	private static bool[,] _mapRoad = new bool[_mapHeight, _mapWidth];
-	private State[] _blocks = new State[_maxRooms];
-	private State[] _rooms = new State[_maxRooms];
+	private RoomState[] _blocks = new RoomState[_maxRooms];
+	private RoomState[] _rooms = new RoomState[_maxRooms];
 
 	[SerializeField] private SpriteRenderer Floor = null;
 	//[SerializeField] private SpriteRenderer Wall = null;
 	[SerializeField] private SpriteRenderer Room = null;
 	[SerializeField] private SpriteRenderer BackGround = null;
+	[SerializeField] private GameObject _dungeonFile = null;
 
-	//
+	/// <summary>
+	/// OnStart
+	/// </summary>
 	public override void OnStart()
 	{
 		//
@@ -38,12 +41,14 @@ public class DungeonManager : StatesBase
 		//
 		for (int i = 0; i < _maxRooms; i++)
 		{
-			_blocks[i] = new State();
-			_rooms[i] = new State();
+			_blocks[i] = new RoomState();
+			_rooms[i] = new RoomState();
 		}
 
+		//
 		for (int i = 0; i < _mapHeight; i++)
 		{
+			//
 			for (int j = 0; j < _mapWidth; j++)
 			{
 				//端だったら壁を生成
@@ -71,13 +76,17 @@ public class DungeonManager : StatesBase
 		MakeRoad();
 	}
 
-	//
+	/// <summary>
+	/// OnUpdate
+	/// </summary>
 	public override void OnUpdate()
 	{
 
 	}
 
-	//
+	/// <summary>
+	/// MakeLine
+	/// </summary>
 	public void MakeLine()
 	{
 		bool isNextRoom = true;
@@ -246,7 +255,9 @@ public class DungeonManager : StatesBase
 		}
 	}
 
-	//
+	/// <summary>
+	/// CreateRooms
+	/// </summary>
 	public void CreateRooms()
 	{
 		for (int i = 0; i < _currentRooms; i++)
@@ -292,11 +303,13 @@ public class DungeonManager : StatesBase
 
 			//
 			Room.size = new Vector2(_rooms[i].Width, _rooms[i].Height);
-			Instantiate(Room, new Vector3(_rooms[i].PosX + (_rooms[i].Width - 1) * 0.5f, _rooms[i].PosY + (_rooms[i].Height - 1) * 0.5f), Quaternion.identity);
+			Instantiate(Room, new Vector3(_rooms[i].PosX + (_rooms[i].Width - 1) * 0.5f, _rooms[i].PosY + (_rooms[i].Height - 1) * 0.5f), Quaternion.identity).transform.parent = _dungeonFile.transform;
 		}
 	}
 
-	//
+	/// <summary>
+	/// MakeWall
+	/// </summary>
 	public void MakeWall()
 	{
 		//
@@ -318,7 +331,9 @@ public class DungeonManager : StatesBase
 		}
 	}
 
-	//
+	/// <summary>
+	/// CheckRoomNextDoors
+	/// </summary>
 	public void CheckRoomNextDoors()
 	{
 		for (int i = 0; i < _currentRooms; i++)
@@ -347,7 +362,7 @@ public class DungeonManager : StatesBase
 						while (_map[startPosY1, startPosX])
 						{
 							_mapRoad[startPosY1, startPosX] = true;
-							Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
+							Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity).transform.parent = _dungeonFile.transform;
 							startPosX++;
 						}
 
@@ -364,7 +379,7 @@ public class DungeonManager : StatesBase
 						while (_map[startPosY2, startPosX])
 						{
 							_mapRoad[startPosY2, startPosX] = true;
-							Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity);
+							Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity).transform.parent = _dungeonFile.transform;
 							startPosX--;
 						}
 
@@ -375,7 +390,7 @@ public class DungeonManager : StatesBase
 								if (!_mapRoad[startPosY1, startPosX])
 								{
 									_mapRoad[startPosY1, startPosX] = true;
-									Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
+									Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								}
 								startPosY1--;
 							}
@@ -384,14 +399,14 @@ public class DungeonManager : StatesBase
 								if (!_mapRoad[startPosY2, startPosX])
 								{
 									_mapRoad[startPosY2, startPosX] = true;
-									Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity);
+									Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								}
 								startPosY2--;
 							}
 							else if (startPosY1 == startPosY2)
 							{
 								_mapRoad[startPosY1, startPosX] = true;
-								Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
+								Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								break;
 							}
 						}
@@ -420,7 +435,7 @@ public class DungeonManager : StatesBase
 						while (_map[startPosY1, startPosX])
 						{
 							_mapRoad[startPosY1, startPosX] = true;
-							Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
+							Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity).transform.parent = _dungeonFile.transform;
 							startPosX--;
 						}
 
@@ -437,7 +452,7 @@ public class DungeonManager : StatesBase
 						while (_map[startPosY2, startPosX])
 						{
 							_mapRoad[startPosY2, startPosX] = true;
-							Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity);
+							Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity).transform.parent = _dungeonFile.transform;
 							startPosX++;
 						}
 
@@ -448,7 +463,7 @@ public class DungeonManager : StatesBase
 								if (!_mapRoad[startPosY1, startPosX])
 								{
 									_mapRoad[startPosY1, startPosX] = true;
-									Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
+									Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								}
 								startPosY1--;
 							}
@@ -457,14 +472,14 @@ public class DungeonManager : StatesBase
 								if (!_mapRoad[startPosY2, startPosX])
 								{
 									_mapRoad[startPosY2, startPosX] = true;
-									Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity);
+									Instantiate(Floor, new Vector3(startPosX, startPosY2), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								}
 								startPosY2--;
 							}
 							else if (startPosY1 == startPosY2)
 							{
 								_mapRoad[startPosY1, startPosX] = true;
-								Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity);
+								Instantiate(Floor, new Vector3(startPosX, startPosY1), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								break;
 							}
 						}
@@ -493,7 +508,7 @@ public class DungeonManager : StatesBase
 						while (_map[startPosY, startPosX1])
 						{
 							_mapRoad[startPosY, startPosX1] = true;
-							Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
+							Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 							startPosY--;
 						}
 
@@ -510,7 +525,7 @@ public class DungeonManager : StatesBase
 						while (_map[startPosY, startPosX2])
 						{
 							_mapRoad[startPosY, startPosX2] = true;
-							Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity);
+							Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 							startPosY++;
 						}
 
@@ -521,7 +536,7 @@ public class DungeonManager : StatesBase
 								if (!_mapRoad[startPosY, startPosX1])
 								{
 									_mapRoad[startPosY, startPosX1] = true;
-									Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
+									Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								}
 								startPosX1--;
 							}
@@ -530,14 +545,14 @@ public class DungeonManager : StatesBase
 								if (!_mapRoad[startPosY, startPosX2])
 								{
 									_mapRoad[startPosY, startPosX2] = true;
-									Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity);
+									Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								}
 								startPosX2--;
 							}
 							else if (startPosX1 == startPosX2)
 							{
 								_mapRoad[startPosY, startPosX1] = true;
-								Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
+								Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								break;
 							}
 						}
@@ -566,7 +581,7 @@ public class DungeonManager : StatesBase
 						while (_map[startPosY, startPosX1])
 						{
 							_mapRoad[startPosY, startPosX1] = true;
-							Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
+							Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 							startPosY++;
 						}
 
@@ -583,7 +598,7 @@ public class DungeonManager : StatesBase
 						while (_map[startPosY, startPosX2])
 						{
 							_mapRoad[startPosY, startPosX2] = true;
-							Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity);
+							Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 							startPosY--;
 						}
 
@@ -594,7 +609,7 @@ public class DungeonManager : StatesBase
 								if (!_mapRoad[startPosY, startPosX1])
 								{
 									_mapRoad[startPosY, startPosX1] = true;
-									Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
+									Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								}
 								startPosX1--;
 							}
@@ -603,14 +618,14 @@ public class DungeonManager : StatesBase
 								if (!_mapRoad[startPosY, startPosX2])
 								{
 									_mapRoad[startPosY, startPosX2] = true;
-									Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity);
+									Instantiate(Floor, new Vector3(startPosX2, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								}
 								startPosX2--;
 							}
 							else if(startPosX1 == startPosX2)
 							{
 								_mapRoad[startPosY, startPosX1] = true;
-								Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity);
+								Instantiate(Floor, new Vector3(startPosX1, startPosY), Quaternion.identity).transform.parent = _dungeonFile.transform;
 								break;
 							}
 						}
@@ -620,7 +635,9 @@ public class DungeonManager : StatesBase
 		}
 	}
 
-	//
+	/// <summary>
+	/// MakeRoad
+	/// </summary>
 	public void MakeRoad()
 	{
 		//
@@ -638,34 +655,49 @@ public class DungeonManager : StatesBase
 		}
 	}
 
-	//
+	/// <summary>
+	/// MakeBackGround
+	/// </summary>
 	public void MakeBackGround()
 	{
 		BackGround.size = new Vector2(_mapWidth + 10, _mapHeight + 10);
-		Instantiate(BackGround, new Vector3((_mapWidth - 1) * 0.5f, (_mapHeight - 1) * 0.5f), Quaternion.identity);
+		Instantiate(BackGround, new Vector3((_mapWidth - 1) * 0.5f, (_mapHeight - 1) * 0.5f), Quaternion.identity).transform.parent = _dungeonFile.transform;
 	}
 
-	//
+	/// <summary>
+	/// GetMapWidth
+	/// </summary>
+	/// <returns></returns>
 	public int GetMapWidth()
 	{
 		return _mapWidth;
 	}
 
-	//
+	/// <summary>
+	/// GetMapHeight
+	/// </summary>
+	/// <returns></returns>
 	public int GetMapHeight()
 	{
 		return _mapHeight;
 	}
 
-	//
+	/// <summary>
+	/// GetMap
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <returns></returns>
 	public bool GetMap(int x, int y)
 	{
 		return _map[y, x];
 	}
 }
 
-//
-public class State
+/// <summary>
+/// RoomState
+/// </summary>
+public class RoomState
 {
 	//
 	private int _posX;

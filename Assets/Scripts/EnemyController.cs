@@ -5,8 +5,11 @@ using UnityEngine;
 public class EnemyController : CharacterState
 {
 	private bool _isLoop = true;
-	
-	void Update()
+
+	/// <summary>
+	/// Update
+	/// </summary>
+	private void Update()
 	{
 		//移動中だったら
 		if (_isMove)
@@ -15,6 +18,76 @@ public class EnemyController : CharacterState
 		}
 	}
 
+	/// <summary>
+	/// Inisialize
+	/// </summary>
+	public void Inisialize()
+	{
+		CharactorInisialize();
+	}
+
+	/// <summary>
+	/// ChackAttackArea
+	/// </summary>
+	/// <returns></returns>
+	public bool ChackAttackArea()
+	{
+		if (Managers.Player.GetPosition() == new Vector3(transform.position.x + 1, transform.position.y, transform.position.z))
+		{
+			AttackThePlayer("AttackRight");
+			return true;
+		}
+		else if (Managers.Player.GetPosition() == new Vector3(transform.position.x - 1, transform.position.y, transform.position.z))
+		{
+			AttackThePlayer("AttackLeft");
+			return true;
+		}
+		else if (Managers.Player.GetPosition() == new Vector3(transform.position.x, transform.position.y + 1, transform.position.z))
+		{
+			AttackThePlayer("AttackUp");
+			return true;
+		}
+		else if (Managers.Player.GetPosition() == new Vector3(transform.position.x, transform.position.y - 1, transform.position.z))
+		{
+			AttackThePlayer("AttackDown");
+			return true;
+		}
+		else if (Managers.Player.GetPosition() == new Vector3(transform.position.x + 1, transform.position.y + 1, transform.position.z))
+		{
+			AttackThePlayer("AttackUpRight");
+			return true;
+		}
+		else if (Managers.Player.GetPosition() == new Vector3(transform.position.x + 1, transform.position.y - 1, transform.position.z))
+		{
+			AttackThePlayer("AttackDownRight");
+			return true;
+		}
+		else if (Managers.Player.GetPosition() == new Vector3(transform.position.x - 1, transform.position.y + 1, transform.position.z))
+		{
+			AttackThePlayer("AttackUpLeft");
+			return true;
+		}
+		else if (Managers.Player.GetPosition() == new Vector3(transform.position.x - 1, transform.position.y - 1, transform.position.z))
+		{
+			AttackThePlayer("AttackDownLeft");
+			return true;
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// AttackThePlayer
+	/// </summary>
+	/// <returns></returns>
+	public void AttackThePlayer(string str)
+	{
+		_animator.SetTrigger(str);
+		Managers.Player.Damage();
+	}
+
+	/// <summary>
+	/// MoveEnemy
+	/// </summary>
 	public void MoveEnemy()
 	{
 		//

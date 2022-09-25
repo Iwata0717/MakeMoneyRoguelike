@@ -4,37 +4,50 @@ using UnityEngine;
 
 public class CharacterColliderManager : StatesBase
 {
-	private static bool[,] _characterCollider = null;
+	private static bool[,] _objectCollider = null;
 
-	//
+	/// <summary>
+	/// OnStart
+	/// </summary>
 	public override void OnStart()
 	{
-		_characterCollider = new bool[Managers.Dungeon.GetMapHeight(), Managers.Dungeon.GetMapWidth()];
+		_objectCollider = new bool[Managers.Dungeon.GetMapHeight(), Managers.Dungeon.GetMapWidth()];
 
 		for (int i = 0; i< Managers.Dungeon.GetMapHeight(); i++)
 		{
 			for (int j = 0; j < Managers.Dungeon.GetMapWidth(); j++)
 			{
-				_characterCollider[i, j] = true;
+				_objectCollider[i, j] = true;
 			}
 		}
 	}
 
-	//
+	/// <summary>
+	/// OnUpdate
+	/// </summary>
 	public override void OnUpdate()
 	{
 
 	}
 
-	//
+	/// <summary>
+	/// GetCollider
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <returns></returns>
 	public bool GetCollider(int x, int y)
 	{
-		return _characterCollider[y, x];
+		return _objectCollider[y, x];
 	}
 
-	//
+	/// <summary>
+	/// SetCollider
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
 	public void SetCollider(int x, int y)
 	{
-		_characterCollider[y, x] = !_characterCollider[y, x];
+		_objectCollider[y, x] = !_objectCollider[y, x];
 	}
 }

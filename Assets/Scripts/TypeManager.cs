@@ -15,7 +15,10 @@ public class TypeManager : MonoBehaviour
 	}
 	[SerializeField] protected CipType _type;
 
-	//
+	/// <summary>
+	/// ReturnType
+	/// </summary>
+	/// <returns></returns>
 	public string ReturnType()
 	{
 		return _type.ToString();

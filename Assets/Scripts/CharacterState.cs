@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class CharacterState : TypeManager
 {
+	protected Animator _animator = null;
 	protected bool _isMove;
 	protected int _hp;
 	protected int _attack;
 	protected int _defense;
 	protected int _movementX, _movementY;
 	protected int _targetPosX, _targetPosY;
-	protected float _speed = SpeedManager._dash;
+	protected float _speed = 5f;
 	protected enum DIR
 	{
 		UP,
@@ -22,9 +23,15 @@ public class CharacterState : TypeManager
 		LEFTUP,
 		LEFTDOWN
 	}
+
 	[SerializeField] protected DIR _dir;
 
-	//
+	/// <summary>
+	/// StartCharacterMove
+	/// </summary>
+	/// <param name="movementX"></param>
+	/// <param name="movementY"></param>
+	/// <param name="dir"></param>
 	protected void StartCharacterMove(int movementX, int movementY, DIR dir)
 	{
 		_isMove = true;
@@ -39,7 +46,9 @@ public class CharacterState : TypeManager
 		CharacterMove();
 	}
 
-	//
+	/// <summary>
+	/// CharacterMove
+	/// </summary>
 	protected void CharacterMove()
 	{
 		transform.Translate(_movementX * _speed * Time.deltaTime, _movementY * _speed * Time.deltaTime, 0);
@@ -129,19 +138,22 @@ public class CharacterState : TypeManager
 		}
 	}
 
-	public void MoveStateReset()
+	/// <summary>
+	/// MoveStateReset
+	/// </summary>
+	protected void MoveStateReset()
 	{
 		_movementX = 0;
 		_movementY = 0;
 		_targetPosX = 0;
 		_targetPosY = 0;
 	}
-}
 
-public class SpeedManager
-{
-	public const float _dash = 10f;
-	public const float _fast = 5f;
-	public const float _normal = 4f;
-	public const float _slow = 3f;
+	/// <summary>
+	/// CharactorInisialize
+	/// </summary>
+	protected void CharactorInisialize()
+	{
+		_animator = GetComponent<Animator>();
+	}
 }

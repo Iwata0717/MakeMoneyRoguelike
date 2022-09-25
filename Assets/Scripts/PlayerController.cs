@@ -4,23 +4,41 @@ using UnityEngine;
 
 public class PlayerController : CharacterState
 {
-	private CameraController _cameraController = null;
+	[SerializeField] private Sprite _damageSprite = null;
 
-	// Start is called before the first frame update
-	void Start()
+	private SpriteRenderer _spriteRenderer = null;
+	private CameraController _cameraController = null;
+	private UiHPController _hpText = null;
+	private UIWhiteController _uIWhiteController = null;
+
+	/// <summary>
+	/// Start
+	/// </summary>
+	private void Start()
 	{
+		_spriteRenderer = GetComponent<SpriteRenderer>();
 		_cameraController = GameObject.Find("Main Camera").GetComponent<CameraController>();
 		_cameraController.MoveCamera(transform.position.x, transform.position.y);
 		_cameraController.transform.SetParent(this.transform);
+		_hp = 3;
+		_hpText = Managers.Player.GetHpText().GetComponent<UiHPController>();
+		_uIWhiteController = Managers.Player.GetUIWhiteController().GetComponent<UIWhiteController>();
 	}
 
-	//
+	/// <summary>
+	/// PlayerMove
+	/// </summary>
 	public void PlayerMove()
 	{
 		//移動中だったら
 		if (_isMove)
 		{
 			CharacterMove();
+			if (!_isMove)
+			{
+				Managers.Item.CheckOnPlayer(transform.position);
+				Managers.Turn.ChangeIsPlayerTurn();
+			}
 		}
 
 		//移動中でなければ
@@ -33,84 +51,101 @@ public class PlayerController : CharacterState
 			}
 
 			//右上
-			else if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow) && 
+			else if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.W) &&
 				Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y + 1) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y + 1))
 			{
 				Managers.MiniMap.PlayerMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y + 1);
 				StartCharacterMove(1, 1, DIR.RIGHTUP);
-				Managers.Turn.ChangeIsPlayerTurn();
 			}
 
 			//右下 
-			else if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.DownArrow) && 
+			else if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.S) &&
 				Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y - 1) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y - 1))
 			{
 				Managers.MiniMap.PlayerMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y - 1);
 				StartCharacterMove(1, -1, DIR.RIGHTDOWN);
-				Managers.Turn.ChangeIsPlayerTurn();
 			}
 
 			//左上
-			else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow) &&
+			else if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.W) &&
 				Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y + 1) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y + 1))
 			{
 				Managers.MiniMap.PlayerMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y + 1);
 				StartCharacterMove(-1, 1, DIR.LEFTUP);
-				Managers.Turn.ChangeIsPlayerTurn();
 			}
 
 			//左下
-			else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.DownArrow) &&
+			else if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.S) &&
 				Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y - 1) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y - 1))
 			{
 				Managers.MiniMap.PlayerMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y - 1);
 				StartCharacterMove(-1, -1, DIR.LEFTDOWN);
-				Managers.Turn.ChangeIsPlayerTurn();
 			}
 
 			//上
-			else if (Input.GetKey(KeyCode.UpArrow) &&
+			else if (Input.GetKey(KeyCode.W) &&
 				Managers.Dungeon.GetMap((int)transform.position.x, (int)transform.position.y + 1) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x, (int)transform.position.y + 1))
 			{
 				Managers.MiniMap.PlayerMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x, (int)transform.position.y + 1);
 				StartCharacterMove(0, 1, DIR.UP);
-				Managers.Turn.ChangeIsPlayerTurn();
 			}
 
 			//下
-			else if (Input.GetKey(KeyCode.DownArrow) &&
+			else if (Input.GetKey(KeyCode.S) &&
 				Managers.Dungeon.GetMap((int)transform.position.x, (int)transform.position.y - 1) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x, (int)transform.position.y - 1))
 			{
 				Managers.MiniMap.PlayerMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x, (int)transform.position.y - 1);
 				StartCharacterMove(0, -1, DIR.DOWN);
-				Managers.Turn.ChangeIsPlayerTurn();
 			}
 
 			//右
-			else if (Input.GetKey(KeyCode.RightArrow) &&
+			else if (Input.GetKey(KeyCode.D) &&
 				Managers.Dungeon.GetMap((int)transform.position.x + 1, (int)transform.position.y) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x + 1, (int)transform.position.y))
 			{
 				Managers.MiniMap.PlayerMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x + 1, (int)transform.position.y);
 				StartCharacterMove(1, 0, DIR.RIGHT);
-				Managers.Turn.ChangeIsPlayerTurn();
 			}
 
 			//左
-			else if (Input.GetKey(KeyCode.LeftArrow) &&
+			else if (Input.GetKey(KeyCode.A) &&
 				Managers.Dungeon.GetMap((int)transform.position.x - 1, (int)transform.position.y) &&
 				Managers.CharacterCollider.GetCollider((int)transform.position.x - 1, (int)transform.position.y))
 			{
 				Managers.MiniMap.PlayerMove((int)transform.position.x, (int)transform.position.y, (int)transform.position.x - 1, (int)transform.position.y);
 				StartCharacterMove(-1, 0, DIR.LEFT);
-				Managers.Turn.ChangeIsPlayerTurn();
 			}
+		}
+	}
+
+	/// <summary>
+	/// GetPosition
+	/// </summary>
+	/// <returns></returns>
+	public Vector3 GetPosition()
+	{
+		return transform.position;
+	}
+
+	/// <summary>
+	/// Damage
+	/// </summary>
+	public void Damage()
+	{
+		_hp--;
+		_hpText.OnUpdate(_hp);
+
+		if (_hp <= 0)
+		{
+			_uIWhiteController.OnAnimator("Out");
+			_spriteRenderer.sprite = _damageSprite;
+			Managers.Game.IsEnd = true;
 		}
 	}
 }

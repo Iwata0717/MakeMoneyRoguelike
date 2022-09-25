@@ -15,16 +15,20 @@ public class MiniMapManager : StatesBase
 	[SerializeField] private Sprite Item = null;
 	[SerializeField] private Sprite Goal = null;
 
-	//
+	/// <summary>
+	/// OnStart
+	/// </summary>
 	public override void OnStart()
 	{
-		//_miniMap.transform.Translate(0, -mapHeight, 0);
+		int height = Managers.Dungeon.GetMapHeight();
+		int width = Managers.Dungeon.GetMapWidth();
+		
 		_miniMap.transform.position = new Vector3(_miniMap.transform.position.x, _miniMap.transform.position.y, _miniMap.transform.position.z);
-		_mapCip = new Image[Managers.Dungeon.GetMapHeight(), Managers.Dungeon.GetMapWidth()];
+		_mapCip = new Image[height, width];
 
-		for (int i = 0; i < Managers.Dungeon.GetMapHeight(); i++)
+		for (int i = 0; i < height; i++)
 		{
-			for (int j = 0; j < Managers.Dungeon.GetMapWidth(); j++)
+			for (int j = 0; j < width; j++)
 			{
 				if (Managers.Dungeon.GetMap(j, i))
 				{
@@ -37,12 +41,19 @@ public class MiniMapManager : StatesBase
 		}
 	}
 
+	/// <summary>
+	/// OnUpdate
+	/// </summary>
 	public override void OnUpdate()
 	{
 		throw new System.NotImplementedException();
 	}
 
-	//
+	/// <summary>
+	/// SetMiniMapPlayer
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
 	public void SetMiniMapPlayer(int x, int y)
 	{
 		if (!_mapCip[y, x].gameObject.activeSelf)
@@ -53,7 +64,12 @@ public class MiniMapManager : StatesBase
 		_mapCip[y, x].sprite = Player;
 	}
 
-	//
+	/// <summary>
+	/// SetMiniMap
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <param name="cipType"></param>
 	public void SetMiniMap(int x, int y, int cipType)
 	{
 		switch (cipType)
@@ -73,7 +89,13 @@ public class MiniMapManager : StatesBase
 
 	}
 
-	//
+	/// <summary>
+	/// PlayerMove
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <param name="afterX"></param>
+	/// <param name="afterY"></param>
 	public void PlayerMove(int x, int y, int afterX, int afterY)
 	{
 		if (!_mapCip[afterY, afterX].gameObject.activeSelf)
@@ -85,7 +107,13 @@ public class MiniMapManager : StatesBase
 		_mapCip[afterY, afterX].sprite = Player;
 	}
 
-	//
+	/// <summary>
+	/// EnemyMove
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <param name="afterX"></param>
+	/// <param name="afterY"></param>
 	public void EnemyMove(int x, int y, int afterX, int afterY)
 	{
 		_mapCip[y, x].sprite = Floor;
